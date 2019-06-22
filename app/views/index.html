@@ -1,0 +1,34 @@
+{{ define "content" }}
+<div class="container">
+  <h3 class="mb-3">Generate Access Token</h3>
+  <form class="card bg-light" method="post">
+    <div class="card-body">
+      <div class="form-group row">
+        <label for="AppID" class="col-4 col-form-label">APP ID</label>
+        <div class="col-8">
+          <input class="form-control" type="text" id="AppID" name="AppID" value="{{ .session.AppID }}">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="ConsumerKey" class="col-4 col-form-label">Service API Consumer Key</label>
+        <div class="col-8">
+          <input class="form-control" type="text" id="ConsumerKey" name="ConsumerKey" value="{{ .session.ConsumerKey }}">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="Domain" class="col-4 col-form-label">Domain</label>
+        <div class="col-8">
+          <input class="form-control" type="text" id="Domain" name="Domain" value="{{ .session.Domain }}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-8 offset-4">
+          <button class="btn btn-primary" role="button">Generate</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <br>
+  <div>{{ .session.AccessToken }}</div>
+</div>
+{{ end }}

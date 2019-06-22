@@ -1,0 +1,22 @@
+{{ define "content" }}
+<div class="container">
+  <h3 class="mb-3">Events</h3>
+  {{ range .events }}
+  <div>
+    <div>{{ .SummaryDate }}</div>
+    <div><strong>{{ .Summary }}</strong></div>
+    <div><pre>{{ .Description }}</pre></div>
+    <div>{{ .Location }}</div>
+    <div><span class="badge badge-info">{{ .Organizer }}</span></div>
+    <div><small>
+      Created {{ .Created.Format "2006/01/02 15:04" }}<br>
+      Updated {{ .LastModified.Format "2006/01/02 15:04" }}</small>
+    </div>
+    <div><a href="{{ .ViewURL }}">Open</a></div>
+    <div><small>{{ .Source }}:{{ .UID }}</small></div>
+    <div><pre>{{ .Raw }}</pre></div>
+  </div>
+  <hr>
+  {{ end }}
+</div>
+{{ end }}
