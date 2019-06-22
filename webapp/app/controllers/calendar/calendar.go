@@ -56,9 +56,27 @@ func Events(c echo.Context) error {
 	to := r.FormValue("to")
 
 	session := perm.LoadSession(r)
+	if appID := r.FormValue("appID"); appID != "" {
+		session.AppID = appID
+	}
+	if consumerKey := r.FormValue("consumerKey"); consumerKey != "" {
+		session.ConsumerKey = consumerKey
+	}
+	if accessToken := r.FormValue("accessToken"); accessToken != "" {
+		session.AccessToken = accessToken
+	}
+
+	name := "明日"
+	if n := r.FormValue("name"); n != "" {
+		name = n
+	}
+
 	values := url.Values{}
 	values.Add("rangeDateFrom", from)
 	values.Add("rangeDateUntil", to)
+	if calendarId := r.FormValue("calendarId"); calendarId != "" {
+		values.Add("calendarId", calendarId)
+	}
 	req, err := http.NewRequest("POST",
 		fmt.Sprintf("https://apis.worksmobile.com/%s/calendar/getScheduleList/V3",
 			session.AppID),
@@ -156,12 +174,12 @@ func Events(c echo.Context) error {
 			}
 			if me.StartDate.Format("20060102") == me.StartDate.Format("20060102") {
 				me.SummaryDate = fmt.Sprintf("%s〜%s",
-					me.StartDate.Format("2006/01/02 15:04"),
+					me.StartDate.Format("15:04"),
 					me.EndDate.Format("15:04"))
 			} else {
-				me.SummaryDate = fmt.Sprintf("%s〜%s",
+				me.SummaryDate = fmt.Sprintf("%s〜\n%s",
 					me.StartDate.Format("2006/01/02 15:04"),
-					me.EndDate.Format("01/02 15:04"))
+					me.EndDate.Format("2006/01/02 15:04"))
 			}
 
 			events = append(events, me)
@@ -172,6 +190,35 @@ func Events(c echo.Context) error {
 	sort.Slice(events, func(i, j int) bool {
 		return events[i].StartDate.Before(events[j].StartDate)
 	})
+
+	// Send to LINE
+	if lineToken := r.FormValue("lineToken"); lineToken != "" {
+		message := name + "の予定\n"
+		for _, me := range events {
+			message += "■ " + me.SummaryDate + "\n"
+			message += me.Summary + "\n"
+			if me.Location != "" {
+				message += me.Location + "\n"
+			}
+			message += "\n"
+		}
+		values := url.Values{}
+		values.Add("message", message)
+		req, err := http.NewRequest("POST",
+			"https://notify-api.line.me/api/notify",
+			strings.NewReader(values.Encode()))
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("Authorization", "Bearer "+lineToken)
+		resp, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		return c.String(http.StatusOK, "OK")
+	}
 
 	data := map[string]interface{}{}
 	data["req"] = r
