@@ -13,6 +13,7 @@ import (
 	"github.com/luxifer/ical"
 	"github.com/s-aska/line-works-debugger-go/contrlib/perm"
 	"github.com/teambition/rrule-go"
+	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/urlfetch"
 )
 
@@ -111,7 +112,8 @@ func Events(c echo.Context) error {
 	for _, schedule := range jsonResp.ReturnValue {
 		calendar, err := ical.Parse(strings.NewReader(schedule.Ical), nil)
 		if err != nil {
-			return err
+			log.Warningf(ctx, "[ical.Parse] error:%v", err)
+			continue
 		}
 
 		for _, event := range calendar.Events {
