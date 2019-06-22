@@ -11,5 +11,6 @@ func registerRoutes(e *echo.Echo) {
 	e.POST("/", top.Post)
 	e.GET("/callback", top.Callback)
 	e.GET("/calendar/", calendar.Events)
+	e.POST("/calendar/", calendar.Events)
 	e.POST("/callback", top.Callback)
 }
