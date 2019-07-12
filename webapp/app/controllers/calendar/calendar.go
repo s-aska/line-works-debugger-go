@@ -204,6 +204,7 @@ func Events(c echo.Context) error {
 			}
 			message += "\n"
 		}
+		message = strings.Replace(message, "\\n", "\n", -1)
 		values := url.Values{}
 		values.Add("message", message)
 		req, err := http.NewRequest("POST",
