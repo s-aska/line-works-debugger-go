@@ -121,8 +121,8 @@ func Events(c echo.Context) error {
 			me.ViewURL = schedule.ViewURL
 			me.Summary = event.Summary
 			me.Description = strings.Replace(event.Description, "\\n", "\n", -1)
-			me.StartDate = event.StartDate
-			me.EndDate = event.EndDate
+			me.StartDate = event.StartDate.In(jst)
+			me.EndDate = event.EndDate.In(jst)
 
 			for _, prop := range event.Properties {
 				switch prop.Name {
@@ -132,11 +132,11 @@ func Events(c echo.Context) error {
 					me.Location = prop.Value
 				case "CREATED":
 					if t, err := time.Parse("20060102T150405Z", prop.Value); err == nil {
-						me.Created = t
+						me.Created = t.In(jst)
 					}
 				case "LAST-MODIFIED":
 					if t, err := time.Parse("20060102T150405Z", prop.Value); err == nil {
-						me.LastModified = t
+						me.LastModified = t.In(jst)
 					}
 				case "RRULE":
 					option, err := rrule.StrToROptionInLocation(prop.Value, jst)
