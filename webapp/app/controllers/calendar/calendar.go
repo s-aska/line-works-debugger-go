@@ -75,8 +75,8 @@ func Events(c echo.Context) error {
 	values := url.Values{}
 	values.Add("rangeDateFrom", from)
 	values.Add("rangeDateUntil", to)
-	if calendarId := r.FormValue("calendarId"); calendarId != "" {
-		values.Add("calendarId", calendarId)
+	if calendarID := r.FormValue("calendarId"); calendarID != "" {
+		values.Add("calendarId", calendarID)
 	}
 	req, err := http.NewRequest("POST",
 		fmt.Sprintf("https://apis.worksmobile.com/%s/calendar/getScheduleList/V3",
@@ -98,7 +98,7 @@ func Events(c echo.Context) error {
 
 	// dumpReq, _ := httputil.DumpRequest(req, true)
 	// log.Debugf(ctx, "%s", dumpReq)
-	//
+
 	// dumpResp, _ := httputil.DumpResponse(resp, true)
 	// log.Debugf(ctx, "%s", dumpResp)
 
