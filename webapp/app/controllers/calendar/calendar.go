@@ -56,6 +56,15 @@ func Events(c echo.Context) error {
 	from := r.FormValue("from")
 	to := r.FormValue("to")
 
+	fromDate, err := time.ParseInLocation("20060102", from, jst)
+	if err != nil {
+		return err
+	}
+	toDate, err := time.ParseInLocation("20060102", from, jst)
+	if err != nil {
+		return err
+	}
+
 	session := perm.LoadSession(r)
 	if appID := r.FormValue("appID"); appID != "" {
 		session.AppID = appID
@@ -149,7 +158,7 @@ func Events(c echo.Context) error {
 					if err != nil {
 						return err
 					}
-					me.RuleDates = rule.All()
+					me.RuleDates = rule.Between(fromDate, toDate, true)
 				case "ORGANIZER":
 					for key, param := range prop.Params {
 						if key == "CN" {
