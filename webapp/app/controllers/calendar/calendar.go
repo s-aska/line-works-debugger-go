@@ -60,7 +60,7 @@ func Events(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	toDate, err := time.ParseInLocation("20060102", from, jst)
+	toDate, err := time.ParseInLocation("20060102", to, jst)
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,16 @@ func Events(c echo.Context) error {
 					// log.Debugf(ctx, "    RuleDate:%s from:%s to:%s skip", date.Format("20060102"), from, to)
 				}
 			}
-			if me.StartDate.Format("20060102") == me.StartDate.Format("20060102") {
+			if me.StartDate.Before(fromDate) && me.EndDate.Before(fromDate) {
+				log.Debugf(ctx, "    from:%s %s-%s skip", fromDate, me.StartDate, me.EndDate)
+				continue
+			}
+			if me.StartDate.After(toDate) && me.EndDate.After(toDate) {
+				log.Debugf(ctx, "    to:%s %s-%s skip", toDate, me.StartDate, me.EndDate)
+				continue
+			}
+			if fromDate.Format("20060102") == me.StartDate.Format("20060102") &&
+				fromDate.Format("20060102") == me.EndDate.Format("20060102") {
 				me.SummaryDate = fmt.Sprintf("%s〜%s",
 					me.StartDate.Format("15:04"),
 					me.EndDate.Format("15:04"))
